@@ -6,6 +6,60 @@
     <title>Todo List</title>
 </head>
 <body>
-    
+
+    <!-- add project form -->
+
+    <div class="add-project-section">
+        <h1>Add project</h1>
+        <form action="" name="project-form" id="project-form">
+            <div>
+                <label for="name-input">name</label>
+                <input type="text" id="name-input" name="name-input" class="text-input">
+            </div>
+
+            <button class="button" type="submit" id="add-project-button">Add project</button>
+        </form>
+    </div>
+
+    <!-- todo form -->
+
+    <div class="add-todo-section">
+        <h1>Add todo</h1>
+        <form action="" name="todo-form" id="todo-form">
+            <div>
+                <label for="title-input">title</label>
+                <input type="text" id="title-input" name="title-input" class="text-input">
+            </div>
+
+            <div>
+                <label for="description-input">description</label>
+                <textarea type="text" id="description-input" name="description-input" class="text-input"></textarea>
+            </div>
+
+            <div>
+                <label for="due-date-input">due-date</label>
+                <input type="date" id="title-input" name="due-date-input" class="text-input">
+            </div>
+
+            <div>
+                <label for="priority-input">title</label>
+                <select name="priority-input" id="priority-input">
+                    <option value="high">high</option>
+                    <option value="medium">medium</option>
+                    <option value="low">normal</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="project-input">title</label>
+                <select name="project-input" id="project-input">
+                    <option value="" selected>Select project</option>
+                </select>
+            </div>
+
+            <button class="button" type="submit" id="add-todo-button">Submit</button>
+            <button class="button" type="button" id="cancel-button">Cancel</button>
+        </form>
+    </div>
 </body>
 </html>
