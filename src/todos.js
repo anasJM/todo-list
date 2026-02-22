@@ -18,6 +18,9 @@ function createNewTodo(title, description, dueDate, priority) {
     }
 }
 
+// fetch today todos
+// function fetch
+
 // export functions
 export {
     createNewTodo,
