@@ -37,9 +37,13 @@ body {
 }
 
 .sidebar li {
-    padding: 10px 0px;
+    padding: 10px 10px;
     border-radius: 5px;
-    /* border: 1px black solid; */
+    cursor: pointer;
+}
+
+.sidebar li:hover {
+    background-color: rgb(229, 243, 255);
 }
 
 .sidebar a {
@@ -63,6 +67,7 @@ body {
     background-color: rgb(217, 236, 255);
     color: rgb(0, 128, 255);
     font-weight: bold;
+    font-size: 1em;
     cursor: pointer;
 }
 

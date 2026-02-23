@@ -9,7 +9,13 @@ allProjects.push(createNewProject("sport"));
 allProjects.push(createNewProject("cleaning"));
 allProjects.push(createNewProject("shoping"));
 
-// console.log(allProjects)
+const todayUTC = new Date().toISOString().slice(0, 10);
+
+allProjects[0].list.push(createNewTodo("tajine", "wiwiwi", todayUTC, "high"))
+allProjects[0].list.push(createNewTodo("tanjia", "wiwiwi", todayUTC, "high"))
+allProjects[0].list.push(createNewTodo("barrad", "wa yeeh", "2026-02-25", "high"))
+
+console.log(allProjects)
 
 // fetch project to sidebar
 const projectSidebarList = document.querySelector("#projects-list-sidebar");
@@ -20,13 +26,8 @@ function fetchProjectToSidebar() {
     projectSidebarList.appendChild(h3)
     allProjects.forEach(project => {
         const li = document.createElement("li");
-        // const a = document.createElement("a");
-        // a.dataset.id = project.id;
-        // a.class = "project-sidebar-link"
-        // a.href = ""
         li.textContent = "# " + project.name;
         li.dataset.id = project.id;
-        // a.appendChild(li);
         projectSidebarList.appendChild(li)
     });
 }
@@ -80,27 +81,36 @@ addTodoform.addEventListener("submit", (event) => {
     event.preventDefault();
     const formData = new FormData(addTodoform);
     // console.log(formData.get("priority-input"))
-    if (formData.get("title-input") !== "" && formData.get("description-input") !== "" && formData.get("due-date-input") !== "" && formData.get("priority-input") !== "" && formData.get("project-input") !== "") {
+    if (formData.get("title-input") !== ""
+        && formData.get("description-input") !== ""
+        && formData.get("due-date-input") !== ""
+        && formData.get("priority-input") !== ""
+        && formData.get("project-input") !== "") {
         let projectIndex = allProjects.findIndex((project) => project.id === formData.get("project-input"));
         allProjects[projectIndex].list.push(createNewTodo(formData.get("title-input"), formData.get("description-input"), formData.get("due-date-input"), formData.get("priority-input")));
-        
+
         fetchTodayTodos();
+        console.log(allProjects)
     }
 })
 
 // fetch today todos
 function fetchTodayTodos() {
     const todayTodos = document.querySelector("#today-todos");
-    const todayUTC = new Date().toISOString().slice(0, 10);
     todayTodos.innerHTML = "";
-    
+
     allProjects.forEach(project => {
         project.list.forEach(element => {
-            if (element.dueDate === todayUTC) {
+            if (element.dueDate === todayUTC && element.isCompleted === false) {
                 const todo = document.createElement("div");
                 todo.classList.add("todo");
 
                 const radioInput = document.createElement("input");
+                
+                // if (element.isCompleted) {
+                //     radioInput.checked = true;
+                // }
+
                 radioInput.type = "radio";
                 radioInput.classList.add("radio");
                 radioInput.dataset.id = element.id
@@ -115,6 +125,27 @@ function fetchTodayTodos() {
         })
     });
 }
+
+fetchTodayTodos();
+
+// add event listener to radio input
+const radios = document.querySelectorAll(".radio");
+
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("radio")) {
+        const targetId = e.target.dataset.id;
+
+        allProjects.forEach(project => {
+            project.list.forEach(todo => {
+                if (todo.id === targetId) {
+                    todo.setTodoToComplete();
+                    fetchTodayTodos();
+                    console.log(todo);
+                }
+            });
+        });
+    }
+});
 
 // show dialogs
 
