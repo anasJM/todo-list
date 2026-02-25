@@ -17,6 +17,10 @@ allProjects[0].list.push(createNewTodo("barrad", "wa yeeh", "2026-02-25", "high"
 
 console.log(allProjects)
 
+const projectList = document.querySelectorAll("li");
+const todayTodos = document.querySelector("#today-todos");
+const h2 = document.querySelector("h2")
+
 // fetch project to sidebar
 const projectSidebarList = document.querySelector("#projects-list-sidebar");
 function fetchProjectToSidebar() {
@@ -89,7 +93,11 @@ addTodoform.addEventListener("submit", (event) => {
         let projectIndex = allProjects.findIndex((project) => project.id === formData.get("project-input"));
         allProjects[projectIndex].list.push(createNewTodo(formData.get("title-input"), formData.get("description-input"), formData.get("due-date-input"), formData.get("priority-input")));
 
-        fetchTodayTodos();
+        if (h2.textContent === "Todo For Today") {
+            fetchTodayTodos();
+        } else {
+            fetchProjectTodos();
+        }
         console.log(allProjects)
     }
 })
@@ -97,30 +105,13 @@ addTodoform.addEventListener("submit", (event) => {
 // fetch today todos
 function fetchTodayTodos() {
     const todayTodos = document.querySelector("#today-todos");
+    h2.textContent = "Todo For Today";
     todayTodos.innerHTML = "";
 
     allProjects.forEach(project => {
         project.list.forEach(element => {
-            if (element.dueDate === todayUTC && element.isCompleted === false) {
-                const todo = document.createElement("div");
-                todo.classList.add("todo");
-
-                const radioInput = document.createElement("input");
-                
-                // if (element.isCompleted) {
-                //     radioInput.checked = true;
-                // }
-
-                radioInput.type = "radio";
-                radioInput.classList.add("radio");
-                radioInput.dataset.id = element.id
-
-                const todoTitle = document.createElement("p");
-                todoTitle.textContent = element.title;
-
-                todo.appendChild(radioInput);
-                todo.appendChild(todoTitle);
-                todayTodos.appendChild(todo);
+            if (element.dueDate === todayUTC) {
+                todoDomCreation(element);
             }
         })
     });
@@ -139,13 +130,125 @@ document.addEventListener("click", (e) => {
             project.list.forEach(todo => {
                 if (todo.id === targetId) {
                     todo.setTodoToComplete();
-                    fetchTodayTodos();
                     console.log(todo);
                 }
             });
         });
     }
 });
+
+// add click event to delete icon
+
+function deleteTodo(targetId) {
+    for (let i = 0; i < allProjects.length; i++) {
+        const project = allProjects[i];
+        for (let j = 0; j < project.list.length; j++) {
+            const todo = project.list[j];
+            if (todo.id === targetId) {
+                allProjects[i].list.splice(j, 1);
+                console.log("todo deleted!")
+                console.log(allProjects)
+            }
+        }
+    }
+}
+
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("delete-icon")) {
+        deleteTodo(e.target.dataset.id);
+        if (h2.textContent === "Todo For Today") {
+            fetchTodayTodos();
+        } else {
+            fetchProjectTodos(projectID);
+        }
+    }
+})
+
+// edit todo + click event
+function editTodo(targetId) {
+
+}
+
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("edit-icon")) {
+
+    }
+})
+
+// todo dom manipulation (create Dom todo)
+
+function todoDomCreation(element) {
+    const todo = document.createElement("div");
+    todo.classList.add("todo");
+
+    const todoDiv1 = document.createElement("div");
+    todoDiv1.classList.add("todo-div");
+
+    const todoDiv2 = document.createElement("div");
+    todoDiv2.classList.add("todo-div");
+
+    // todo div 1 (radio + todo name)
+    const radioInput = document.createElement("input");
+    radioInput.type = "radio";
+    radioInput.classList.add("radio");
+    radioInput.dataset.id = element.id
+
+    if (element.isCompleted) {
+        radioInput.checked = true;
+    }
+
+    const todoTitle = document.createElement("p");
+    todoTitle.textContent = element.title;
+
+    todoDiv1.appendChild(radioInput);
+    todoDiv1.appendChild(todoTitle);
+
+    // todo div 2 (delete + edit)
+    const deleteIcon = document.createElement("div");
+    deleteIcon.classList.add("delete-icon");
+    deleteIcon.dataset.id = element.id;
+
+    const editIcon = document.createElement("div");
+    editIcon.classList.add("edit-icon");
+    editIcon.dataset.id = element.id;
+
+    todoDiv2.appendChild(deleteIcon);
+    todoDiv2.appendChild(editIcon);
+
+    todo.appendChild(todoDiv1);
+    todo.appendChild(todoDiv2);
+    todayTodos.appendChild(todo);
+}
+
+// add event listener to li sidebar
+
+let projectID;
+
+function fetchProjectTodos(targetId) {
+    todayTodos.innerHTML = "";
+    allProjects.forEach(project => {
+        if (project.id === targetId) {
+            projectID = targetId;
+            h2.textContent = project.name
+            project.list.forEach(element => {
+                todoDomCreation(element)
+            })
+        }
+    })
+}
+
+document.addEventListener("click", (e) => {
+    if (e.target.localName === "li") {
+        fetchProjectTodos(e.target.dataset.id);
+    }
+})
+
+// home event listener
+const home = document.querySelector("#home");
+
+home.addEventListener("click", () => {
+    fetchTodayTodos();
+})
 
 // show dialogs
 
@@ -172,4 +275,142 @@ todoCloseButton.addEventListener("click", () => {
 
 projectCloseButton.addEventListener("click", () => {
     projectDialog.close();
+})
+
+
+// show edit dialog
+
+const editDialog = document.createElement("dialog");
+editDialog.id = "edit-todo-section";
+document.body.appendChild(editDialog);
+
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("edit-icon")) {
+        let todoId;
+        let todoTitle;
+        let todoDescription;
+        let todoDueDate;
+        let todoPriority;
+        let todoProject;
+        todoPriority = "";
+        todoProject = "";
+
+        allProjects.forEach(project => {
+            todoProject += `<option value="${project.id}">${project.name}</option>`
+            project.list.forEach(todo => {
+                if (e.target.dataset.id === todo.id) {
+                    todoTitle = todo.title;
+                    todoDescription = todo.description;
+                    todoDueDate = todo.dueDate;
+                    todoId = todo.id;
+
+                    switch (todo.priority) {
+                        case "high":
+                            todoPriority = `
+                                <option value="high" selected>high</option>
+                                <option value="medium">medium</option>
+                                <option value="low">normal</option>`
+                            break;
+                        
+                        case "medium":
+                            todoPriority = `
+                                <option value="high">high</option>
+                                <option value="medium" selected>medium</option>
+                                <option value="low">normal</option>`
+                            break;
+
+                        case "low":
+                            todoPriority = `
+                                <option value="high">high</option>
+                                <option value="medium">medium</option>
+                                <option value="low" selected>normal</option>`
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+            })
+        })
+        editDialog.innerHTML = `
+            <h1>Edit Todo</h1>
+            <form action="" method="get" name="edit-todo-form" id="edit-todo-form" data-id="${todoId}">
+                <div>
+                    <label for="title-input">title</label>
+                    <input value="${todoTitle}" type="text" id="title-input" name="title-input" class="text-input">
+                </div>
+
+                <div>
+                    <label for="description-input">description</label>
+                    <textarea type="text" id="description-input" name="description-input" class="text-input">${todoDescription}</textarea>
+                </div>
+
+                <div>
+                    <label for="due-date-input">due-date</label>
+                    <input value="${todoDueDate}" type="date" id="date-input" name="due-date-input" class="text-input">
+                </div>
+
+                <div>
+                    <label for="priority-input">priority</label>
+                    <select name="priority-input" id="priority-input">
+                        ${todoPriority}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="project-input">project</label>
+                    <select name="project-input" id="project-input">
+                        ${todoProject}
+                    </select>
+                </div>
+
+                <button class="button" type="submit" id="edit-todo-button">Add todo</button>
+                <button class="button" type="button" id="edit-todo-cancel-button">Cancel</button>
+            </form>`;
+
+        console.log(editDialog)
+        editDialog.showModal()
+        
+    }
+})
+
+editDialog.addEventListener("click", (e) => {
+    if (e.target.id === "edit-todo-cancel-button") {
+        editDialog.close()
+    }
+})
+
+// form edit todo submit event
+const editForm = document.querySelector("#edit-todo-form");
+editDialog.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    // console.log(event.target)
+    // console.log(...formData.entries())
+    let todoIndex;
+
+    if (formData.get("title-input") !== ""
+        && formData.get("description-input") !== ""
+        && formData.get("due-date-input") !== ""
+        && formData.get("priority-input") !== ""
+        && formData.get("project-input") !== "") {
+
+        let projectIndex = allProjects.findIndex((project) => project.id === formData.get("project-input"));
+        todoIndex = allProjects[projectIndex].list.findIndex((todo) => todo.id === event.target.dataset.id);
+        projectID = allProjects[projectIndex].id;
+        
+        allProjects[projectIndex].list[todoIndex].title = formData.get("title-input");
+        allProjects[projectIndex].list[todoIndex].description = formData.get("description-input");
+        allProjects[projectIndex].list[todoIndex].dueDate = formData.get("due-date-input");
+        allProjects[projectIndex].list[todoIndex].priority = formData.get("priority-input");
+
+        console.log("todo edited!!!!")
+        console.log(allProjects)
+            
+        if (h2.textContent === "Todo For Today") {
+            fetchTodayTodos();
+        } else {
+            fetchProjectTodos(projectID);
+        }
+    }
 })

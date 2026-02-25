@@ -11,6 +11,7 @@
 
         <!-- sidebar -->
         <div class="sidebar">
+            <button class="nav-add-button" id="home">Home</button>
             <button class="nav-add-button" id="show-add-project-dialog">Add project</button>
             <button class="nav-add-button" id="show-add-todo-dialog">Add Todo</button>
             <ul id="projects-list-sidebar">
@@ -21,7 +22,7 @@
         <main>
             <!-- today todos -->
             <div class="today-todos-section">
-                <h2>Todo for today</h2>
+                <h2>Todo For Today</h2>
                 <div id="today-todos">
                     <div class="todo">
                         <input type="radio" name="checkTodo" id="checkTodo" class="radio">
@@ -83,6 +84,47 @@
                 </div>
 
                 <button class="button" type="submit" id="add-todo-button">Add todo</button>
+                <button class="button" type="button" id="todo-cancel-button">Cancel</button>
+            </form>
+        </dialog>
+
+
+        <!-- edit todo form -->
+        <dialog id="edit-todo-section">
+            <h1>Add todo</h1>
+            <form action="" name="edit-todo-form" id="edit-todo-form">
+                <div>
+                    <label for="title-input">title</label>
+                    <input type="text" id="title-input" name="title-input" class="text-input">
+                </div>
+
+                <div>
+                    <label for="description-input">description</label>
+                    <textarea type="text" id="description-input" name="description-input" class="text-input"></textarea>
+                </div>
+
+                <div>
+                    <label for="due-date-input">due-date</label>
+                    <input type="date" id="date-input" name="due-date-input" class="text-input">
+                </div>
+
+                <div>
+                    <label for="priority-input">priority</label>
+                    <select name="priority-input" id="priority-input">
+                        <option value="high">high</option>
+                        <option value="medium">medium</option>
+                        <option value="low">normal</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="project-input">project</label>
+                    <select name="project-input" id="project-input">
+                        <option value="" selected>Select project</option>
+                    </select>
+                </div>
+
+                <button class="button" type="submit" id="edit-todo-button">Add todo</button>
                 <button class="button" type="button" id="todo-cancel-button">Cancel</button>
             </form>
         </dialog>

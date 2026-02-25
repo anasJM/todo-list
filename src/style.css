@@ -61,14 +61,21 @@ body {
 .nav-add-button {
     display: flex;
     justify-content: start;
-    padding: 15px 20px;
+    padding: 10px 20px;
     border: 0;
     border-radius: 5px;
-    background-color: rgb(217, 236, 255);
+    background-color: rgb(244, 250, 255);
+    border: 1px solid rgb(0, 128, 255);
     color: rgb(0, 128, 255);
     font-weight: bold;
     font-size: 1em;
     cursor: pointer;
+    transition: 150ms;
+}
+
+.nav-add-button:hover {
+    background-color: rgb(0, 128, 255);
+    color: white;
 }
 
 /* main */
@@ -97,11 +104,19 @@ main {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
     padding: 20px 20px;
     /* background-color: gray; */
     border-top: 1px solid rgb(214, 235, 255);
     /* border-bottom: 1px solid rgb(206, 206, 206); */
+}
+
+.todo-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
 }
 
 .todo > p {
@@ -116,4 +131,26 @@ main {
     width: 1.8em;
     height: 1.8em;
     accent-color: rgb(39, 147, 255);
+}
+
+/* svg */
+
+.delete-icon {
+    background-image: url(./images/trash-icon.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 25px 25px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.edit-icon {
+    background-image: url(./images/edit-icon.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
 }
