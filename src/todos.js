@@ -1,7 +1,5 @@
 // create a new to todo function
-function createNewTodo(title, description, dueDate, priority) {
-    const id = crypto.randomUUID();
-    let isCompleted = false;
+function createNewTodo(title, description, dueDate, priority, id = crypto.randomUUID(), isCompleted = false) {
     return {
         id,
         title,

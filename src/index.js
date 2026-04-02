@@ -2,18 +2,38 @@ import "./style.css";
 import { createNewTodo } from "./todos.js"
 import { createNewProject } from "./projects.js"
 
-const allProjects = [];
+let allProjects = [];
 
-allProjects.push(createNewProject("cooking"));
-allProjects.push(createNewProject("sport"));
-allProjects.push(createNewProject("cleaning"));
-allProjects.push(createNewProject("shoping"));
+// window.localStorage.clear()
 
+// get the stored projects and todos from localstorage and store them into allProjects[] 
+if (window.localStorage.getItem("allProjects")) {
+    // parsing json
+    const storedData = JSON.parse(window.localStorage.getItem("allProjects")) || []
+
+    allProjects = storedData.map(p => {
+        const project = createNewProject(p.name)
+        project.list = p.list.map(t => {
+            const todo = createNewTodo(t.title, t.description, t.dueDate, t.priority, t.id, t.isCompleted)
+            todo.setTodoToComplete = function setTodoToComplete() {
+                this.isCompleted = true;
+            }
+            todo.changeTodoPriority = function changeTodoPriority(priority) {
+                this.priority = priority;
+            }
+            if (t.isCompleted === true) {
+                todo.isCompleted = true
+            }
+            return todo
+        })
+        return project
+    })
+
+    console.log(storedData)
+}
+
+// today date UTC
 const todayUTC = new Date().toISOString().slice(0, 10);
-
-allProjects[0].list.push(createNewTodo("tajine", "wiwiwi", todayUTC, "high"))
-allProjects[0].list.push(createNewTodo("tanjia", "wiwiwi", todayUTC, "high"))
-allProjects[0].list.push(createNewTodo("barrad", "wa yeeh", "2026-02-25", "high"))
 
 console.log(allProjects)
 
@@ -69,8 +89,9 @@ addProjectForm.addEventListener("submit", (event) => {
     const projectName = formData.get("name-input");
     if (formData.get("name-input") !== "") {
         allProjects.push(createNewProject(projectName));
+        // save all projects to localstorage
+        window.localStorage.allProjects = JSON.stringify(allProjects);
         console.log(allProjects)
-
         // refetch all project in the select input
         fetchProjectToSelectInput();
         fetchProjectToSidebar();
@@ -92,7 +113,7 @@ addTodoform.addEventListener("submit", (event) => {
         && formData.get("project-input") !== "") {
         let projectIndex = allProjects.findIndex((project) => project.id === formData.get("project-input"));
         allProjects[projectIndex].list.push(createNewTodo(formData.get("title-input"), formData.get("description-input"), formData.get("due-date-input"), formData.get("priority-input")));
-
+        window.localStorage.allProjects = JSON.stringify(allProjects)
         if (h2.textContent === "Todo For Today") {
             fetchTodayTodos();
         } else {
@@ -134,6 +155,8 @@ document.addEventListener("click", (e) => {
                 }
             });
         });
+        // refrech allProjects[] in localstorage
+        window.localStorage.allProjects = JSON.stringify(allProjects)
     }
 });
 
@@ -146,6 +169,10 @@ function deleteTodo(targetId) {
             const todo = project.list[j];
             if (todo.id === targetId) {
                 allProjects[i].list.splice(j, 1);
+
+                // refrech allProjects[] in localStorage
+                window.localStorage.allProjects = JSON.stringify(allProjects)
+
                 console.log("todo deleted!")
                 console.log(allProjects)
             }
@@ -164,16 +191,16 @@ document.addEventListener("click", (e) => {
     }
 })
 
-// edit todo + click event
-function editTodo(targetId) {
+// // edit todo + click event
+// function editTodo(targetId) {
 
-}
+// }
 
-document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("edit-icon")) {
+// document.addEventListener("click", (e) => {
+//     if (e.target.classList.contains("edit-icon")) {
 
-    }
-})
+//     }
+// })
 
 // todo dom manipulation (create Dom todo)
 
@@ -403,6 +430,9 @@ editDialog.addEventListener("submit", (event) => {
         allProjects[projectIndex].list[todoIndex].description = formData.get("description-input");
         allProjects[projectIndex].list[todoIndex].dueDate = formData.get("due-date-input");
         allProjects[projectIndex].list[todoIndex].priority = formData.get("priority-input");
+
+        // refrech allProjects[] in localstorage
+        window.localStorage.allProjects = JSON.stringify(allProjects)
 
         console.log("todo edited!!!!")
         console.log(allProjects)
